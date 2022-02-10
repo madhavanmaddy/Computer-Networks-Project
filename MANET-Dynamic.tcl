@@ -62,7 +62,7 @@ set b [expr {int( $val(nn) - $a)}]
 #Setup a TCP connection
 set tcp0 [new Agent/TCP]
 $ns attach-agent $n($a) $tcp0
-set sink2 [new Agent/TCPVegas]
+set sink2 [new Agent/TCPSink]
 $ns attach-agent $n($b) $sink2
 $ns connect $tcp0 $sink2
 $tcp0 set packetSize_ 1500
@@ -71,7 +71,7 @@ set q [expr {int( $val(nn) - $p)}]
 #Setup a TCP connection
 set tcp1 [new Agent/TCP]
 $ns attach-agent $n($p) $tcp1
-set sink3 [new Agent/TCPVegas]
+set sink3 [new Agent/TCPSink]
 $ns attach-agent $n($q) $sink3
 $ns connect $tcp1 $sink3
 $tcp1 set packetSize_ 1500

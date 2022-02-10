@@ -177,7 +177,7 @@ proc finish {} {
  $ns flush-trace
  close $tracefile
  close $namfile
-#  exec nam MANET.nam &
+ exec nam MANET.nam &
  exit 0
 }
 for {set i 0} {$i < $val(nn) } { incr i } {
