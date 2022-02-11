@@ -1,31 +1,28 @@
-set val(chan) Channel/WirelessChannel ;# channel type
-set val(prop) Propagation/TwoRayGround ;# radio-propagation model
-set val(netif) Phy/WirelessPhy ;# network interface type
-set val(mac) Mac/802_11 ;# MAC type
-set val(ifq) Queue/DropTail/PriQueue ;# interface queue type
-set val(ll) LL ;# link layer type
-set val(ant) Antenna/OmniAntenna ;# antenna model
-set val(ifqlen) 50 ;# max packet in ifq
+set val(chan) Channel/WirelessChannel ;
+set val(prop) Propagation/TwoRayGround ;
+set val(netif) Phy/WirelessPhy ;
+set val(mac) Mac/802_11 ;
+set val(ifq) Queue/DropTail/PriQueue ;
+set val(ll) LL ;
+set val(ant) Antenna/OmniAntenna ;
+set val(ifqlen) 50 ;
 puts "Enter the Number of Nodes : "
 gets stdin val(nn)
-set val(rp) AODV ;# routing protocol
- #for other protocols give set val(rp) DSDV/DSR
-set val(x) 956 ;# X dimension of topography
-set val(y) 600 ;# Y dimension of topography
-set val(stop) 25.0 ;# time of simulation end
+set val(rp) AODV ;
+set val(x) 956 ;
+set val(y) 600 ;
+set val(stop) 25.0 ;
+set val(pktsize) 2000;
 set ns [new Simulator]
-#Setup topography object
 set topo [new Topography]
 $topo load_flatgrid $val(x) $val(y)
 create-god $val(nn)
-#Open the NS trace file
 set tracefile [open MANET.tr w]
 $ns trace-all $tracefile
-#Open the NAM trace file
 set namfile [open MANET.nam w]
 $ns namtrace-all $namfile
 $ns namtrace-all-wireless $namfile $val(x) $val(y)
-set chan [new $val(chan)];#Create wireless channel
+set chan [new $val(chan)];
 $ns node-config -adhocRouting $val(rp) \
  -llType $val(ll) \
  -macType $val(mac) \
@@ -59,32 +56,32 @@ $ns at [expr $i + 1 * 5 ] " $n($i) setdest $x $y $z "
 }
 set a [expr {int(rand() * 5)}]
 set b [expr {int( $val(nn) - $a)}]
-#Setup a TCP connection
+#TCP connection 1
 set tcp0 [new Agent/TCP]
 $ns attach-agent $n($a) $tcp0
 set sink2 [new Agent/TCPSink]
 $ns attach-agent $n($b) $sink2
 $ns connect $tcp0 $sink2
-$tcp0 set packetSize_ 1500
+$tcp0 set packetSize_ 2000
 set p [expr {int(rand() * 15)}]
 set q [expr {int( $val(nn) - $p)}]
-#Setup a TCP connection
+#TCP connection 2
 set tcp1 [new Agent/TCP]
 $ns attach-agent $n($p) $tcp1
 set sink3 [new Agent/TCPSink]
 $ns attach-agent $n($q) $sink3
 $ns connect $tcp1 $sink3
-$tcp1 set packetSize_ 1500
-#Setup a FTP Application over TCP connection
+$tcp1 set packetSize_ 2000
+#FTP Application over TCP connection 1
 set ftp0 [new Application/FTP]
 $ftp0 attach-agent $tcp0
 $ns at 1.0 "$ftp0 start"
-$ns at 30.0 "$ftp0 stop"
-#Setup a FTP Application over TCP connection
+$ns at 15.0 "$ftp0 stop"
+#FTP Application over TCP connection 2
 set ftp1 [new Application/FTP]
 $ftp1 attach-agent $tcp1
-$ns at 31.0 "$ftp1 start"
-$ns at 60.0 "$ftp1 stop"
+$ns at 15.0 "$ftp1 start"
+$ns at 15.0 "$ftp1 stop"
 proc finish {} {
  global ns tracefile namfile
  $ns flush-trace
